@@ -1,5 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+// const pause = require('pause');
+const pause = require('pause');
 
 // import Axios from "axios";
 
@@ -85,34 +87,46 @@ app.post('/api/todos', (req, res, next) => { //get all ids and sort them, find m
 
 // PUT /api/todos/:id
 app.put('/api/todos/:id', (req, res) => {
-  if (!res.body || !req.body.todo) {
-    
+  console.log('This is req: ' + req.body.todo);
+  console.log('This is res: ' + res.body);
+  if (!req.body || !req.body.todo) {
+    console.log('!!!!!!');
+    // console.log(req);
     res.status(400).json({
       error: 'hey, we meet again, Provide todo text',
     });
-  } else {
-    // console.log('received the put request') //we want to update the id with the information they sent 
-    let idToBeModified = req.params.id //now we know what they are trying to modify 
-    let newInfo = req.body //obtains the information from the user
-    //id match what we have on the database 
-    let indexOfItem = todoList.findIndex((missions => {
-      if (missions.id == idToBeModified){  //find the req.params.id (ids) to see if it matches the database 
-        return true;
-      }
-    }))
-      //if find index, it will return -1, if it's -1, return 404, message to user. error status code. 
+    return;
+  }
+  // console.log('received the put request') //we want to update the id with the information they sent 
+  // let idToBeModified = req.params.id //now we know what they are trying to modify 
+  // let newInfo = req.body //obtains the information from the user
+  //id match what we have on the database 
+  // let indexOfItem = todoList.findIndex((missions => {
+  //   if (missions.id == idToBeModified) {  //find the req.params.id (ids) to see if it matches the database 
+  //     console.log(newInfo);
+  //     return true;
+  //   }
+  // }))
+  //if find index, it will return -1, if it's -1, return 404, message to user. error status code. 
 
   //put replaces something there, 
   //patch will modify the object in place 
-    todoList[indexOfItem] = {
-      id: Number.parseInt(idToBeModified),
-      todo: newInfo.todo
+  let updatedToDoPair = {};
+  todoList.forEach((todoPair) => {
+    if (todoPair.id === Number.parseInt(req.params.id)) {
+      todoPair.todo = req.body.todo;
+      updatedToDoPair = todoPair;
     }
-    const status = Object.keys(updatedTodo).length ? 200 : 404;
-    res.status(status).json(updatedTodo); 
-  }
+  });
+  // pause();
+  todoList.forEach((todoPair) => {
+    console.log('This is updatedTodo ' + todoPair);
+  });
+  const status = Object.keys(updatedToDoPair).length ? 200 : 404;
+  res.status(status).json(updatedToDoPair);
+
 });
-  
+
 // DELETE /api/todos/:id
 app.delete('/api/todos/:id', (req, res) => {
   //delete an index and update the array
@@ -122,47 +136,47 @@ app.delete('/api/todos/:id', (req, res) => {
   //     error: 'you know something is wrong if you see this message. haha',
   //   });
   // } else { 
-    //first identify a name holder "youaregoingtobedeleted", 
-      let youAreGoingToBeDeleted = false;
-      todoList = todoList.filter((todo) => {
-        if (todo.id === Number.parseInt(req.params.id)) {
-          youAreGoingToBeDeleted = true;
-          return false;
-        }
-        return true;
-      // return youAreGoingToBeDeleted.id === Number.parseInt(req.params.id);    //see if we can return whatever the user entered
-    })
-    console.log(youAreGoingToBeDeleted);
-    console.log("do you see what's above?");
-    // const status = found ? 200 : 404;
-      // res.status(status).json(todoList);
-
-    // var newArray = array.filter(function(item) {
-    //   return condition;
-    // });
-    //now we got the information 
-    //if youAreGoingToBeDeleted is found, then delete it.
-
-    // todoList = todoList.filter((youAreGoingToBeDeleted) => {
-      
-    // }
-    
-    
-    // pop the array from the index. 
-
-    // app.delete('/api/todos/:id', (req, res) => {
-    //   let found = false;
-    //   todoList = todoList.filter((todo) => {
-    //     if (todo.id === Number.parseInt(req.params.id)) {
-    //       found = true;
-    //       return false;
-    //     }
-    //     return true;
-    //   });
-      const status = youAreGoingToBeDeleted ? 200 : 404;
-      res.status(status).json(todoList);
-    // });
+  //first identify a name holder "youaregoingtobedeleted", 
+  let youAreGoingToBeDeleted = false;
+  todoList = todoList.filter((todo) => {
+    if (todo.id === Number.parseInt(req.params.id)) {
+      youAreGoingToBeDeleted = true;
+      return false;
+    }
+    return true;
+    // return youAreGoingToBeDeleted.id === Number.parseInt(req.params.id);    //see if we can return whatever the user entered
   })
+  console.log(youAreGoingToBeDeleted);
+  console.log("do you see what's above?");
+  // const status = found ? 200 : 404;
+  // res.status(status).json(todoList);
+
+  // var newArray = array.filter(function(item) {
+  //   return condition;
+  // });
+  //now we got the information 
+  //if youAreGoingToBeDeleted is found, then delete it.
+
+  // todoList = todoList.filter((youAreGoingToBeDeleted) => {
+
+  // }
+
+
+  // pop the array from the index. 
+
+  // app.delete('/api/todos/:id', (req, res) => {
+  //   let found = false;
+  //   todoList = todoList.filter((todo) => {
+  //     if (todo.id === Number.parseInt(req.params.id)) {
+  //       found = true;
+  //       return false;
+  //     }
+  //     return true;
+  //   });
+  const status = youAreGoingToBeDeleted ? 200 : 404;
+  res.status(status).json(todoList);
+  // });
+})
 
 // });
 
